@@ -1,0 +1,17 @@
+{
+  "name": "spotmylist-functions",
+  "version": "1.0.0",
+  "description": "Library with services/functions consumed by spotmylist-app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Fredrik Ringlander",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "querystring": "^0.2.0",
+    "request": "^2.87.0"
+  }
+}
