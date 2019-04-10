@@ -6,19 +6,9 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
-//const whitelist = ['https://wt-528cf0f2960f63b4d651b3859d2fbb9a-0.sandbox.auth0-extend.com/','http://localhost:8080'];
-// const options = {
-//   origin: function(origin, callback){
-//     if (whitelist.indexOf(origin) !== -1) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   }
-// };
-
 const redirect_uri =
-  "https://wt-528cf0f2960f63b4d651b3859d2fbb9a-0.sandbox.auth0-extend.com/spotify_auth/callback";
+  //"https://wt-528cf0f2960f63b4d651b3859d2fbb9a-0.sandbox.auth0-extend.com/spotify_auth/callback";
+  "https://wt-820975869a3e549eb65406598aa10b11-0.sandbox.auth0-extend.com/spotify-auth/callback";
 
 var generateRandomString = function(length) {
   var text = "";
@@ -36,76 +26,14 @@ const state_key = "spotify_auth_state";
 const app = express();
 
 app.use(bodyParser.json());
+app.use(cors());
 app.use(cookieParser());
-
-//app.options('*', cors()); // include before other routes
-
-/*app.use(function(req, res, next) {
-  //res.header("Access-Control-Allow-Origin","https://wt-528cf0f2960f63b4d651b3859d2fbb9a-0.sandbox.auth0-extend.com"); //My frontend APP domain
-  // console.log('The request headers: '+req.headers);
-  
-  // //res.header('Access-Control-Allow-Origin', "*");
-  // res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-  // res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  const allowedOrigins = ['https://wt-528cf0f2960f63b4d651b3859d2fbb9a-0.sandbox.auth0-extend.com', 'http://localhost:8080'];
-  // let origin = req.headers.origin;
-  // console.log('Origin in middleware: '+origin);
-  // if(allowedOrigins.indexOf(origin) > -1){
-  //      res.setHeader('Access-Control-Allow-Origin', origin);
-  // }
-  //console.log('Request headers: '+req.headers.origin);
-
-  res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
-  res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.header('Access-Control-Allow-Credentials', true);
-  next();
-});
-
-app.get('/login', (req, res)=>{
-  res.redirect('https://accounts.spotify.com/authorize?' +
-  querystring.stringify({
-        response_type: 'code',
-        client_id: req.webtaskContext.data.SPOTIFY_CLIENT_ID,
-        scope: 'user-read-private user-read-email',
-        redirect_uri
-    }));
-});*/
-
-// app.get('/login',(req,res,next)=>{
-//   res.json('This is CORS-enabled for all origins');
-// });
-
-/*const whitelist = ['http://127.0.0.1:8080','https://wt-528cf0f2960f63b4d651b3859d2fbb9a-0.sandbox.auth0-extend.com',
-                  'https://accounts.spotify.com/authorize','http://localhost:8080'];
-
-
-const corsOptions = {
-  origin: 'https://spotify.com',
-  optionsSuccessStatus:200
-}
-
-const corsOptionsDynamic = {
-  origin: function(origin, callback){
-    if(whitelist.indexOf(origin)!==-1 || !origin){
-      callback(null,true);
-    }else{
-      callback(new Error('Not allowed by CORS'));
-    }
-  }
-  
-}*/
-
-// app.get('/login',cors(corsOptions),(req,res,next)=>{
-//   res.json('This is CORS-enabled for '+corsOptions.origin.toString());
-// });
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
+  res.header("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+
   next();
 });
 
@@ -130,7 +58,7 @@ app.get("/callback", (req, res, next) => {
   let code = req.query.code || null;
   let state = req.query.state || null;
   let storedState = req.cookies ? req.cookies[state_key] : null;
-  
+
   if (state === null || state !== storedState) {
     res.redirect(
       "/#" +
@@ -165,7 +93,7 @@ app.get("/callback", (req, res, next) => {
           scope = body.scope,
           refresh_token = body.refresh_token;
         let uri =
-          process.env.FRONTEND_URI || "http://localhost:8080/spotify-auth";
+          process.env.FRONTEND_URI || "http://localhost:5000/spotify-auth";
         res.redirect(
           uri +
             "?" +
@@ -184,6 +112,7 @@ app.get("/callback", (req, res, next) => {
 });
 
 app.get("/refresh_token", (req, res) => {
+  console.log(res.getHeaders());
   const refresh_token = req.query.refresh_token;
   let authOptions = {
     url: "https://accounts.spotify.com/api/token",
@@ -191,7 +120,7 @@ app.get("/refresh_token", (req, res) => {
       Authorization:
         "Basic " +
         new Buffer(
-          webtaskContext.data.SPOTIFY_CLIENT_ID +
+          req.webtaskContext.data.SPOTIFY_CLIENT_ID +
             ":" +
             req.webtaskContext.data.SPOTIFY_CLIENT_SECRET
         ).toString("base64")
