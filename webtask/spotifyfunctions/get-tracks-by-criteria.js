@@ -48,7 +48,7 @@ module.exports = async (context, cb) => {
 
       switch (criteria.type) {
         case "tempo":
-          filtered = await getTracksByTempo(criteria.params, theTrackIds);
+          filtered = await getTracksByTempo(criteria.parameters, theTrackIds);
           filteredTracks = playlistData.body.items.filter(t => {
             return filtered.some(t2 => {
               return t2.id === t.track.id;

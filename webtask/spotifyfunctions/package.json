@@ -1,0 +1,14 @@
+{
+  "name": "spotifyfunctions",
+  "version": "1.0.0",
+  "description": "A collection of serverless functions used with Spotify API utilizing package spotify-web-api-node",
+  "main": "get-playlists.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Fredrik Ringlander",
+  "license": "ISC",
+  "dependencies": {
+    "spotify-web-api-node": "^4.0.0"
+  }
+}
